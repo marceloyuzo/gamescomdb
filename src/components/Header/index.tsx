@@ -1,16 +1,16 @@
 import logoImg from '../../assets/logoImg.png'
 import { IoIosSearch } from "react-icons/io";
-import { FaSignInAlt } from "react-icons/fa";
+import { FaSignInAlt, FaUser } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
-
-
+import { AuthContext } from '../../contexts/AuthContext';
 
 export function Header() {
    const [enableInput, setEnableInput] = useState<boolean>(false)
    const [enableNavExpansion, setEnableNavExpansion] = useState<boolean>(false)
    const [searchUser, setSearchUser] = useState<string>("")
+   const { loadingAuth, user } = useContext(AuthContext)
 
    function handleInput() {
       if (!enableInput) {
@@ -96,12 +96,21 @@ export function Header() {
                   )}
                </div>
 
-               <Link to="/login">
-                  <FaSignInAlt
-                     size={28}
-                     className='text-main_color cursor-pointer'
-                  />
-               </Link>
+               {user ? (
+                  <Link to="/profile">
+                     <FaUser
+                        size={28}
+                        className='text-main_color cursor-pointer'
+                     />
+                  </Link>
+               ) : (
+                  <Link to="/login">
+                     <FaSignInAlt
+                        size={28}
+                        className='text-main_color cursor-pointer'
+                     />
+                  </Link>
+               )}
             </nav>
          </div>
 

@@ -5,6 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { auth } from "../../services/firebaseConnection"
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth"
+import { db } from "../../services/firebaseConnection"
+import { addDoc, collection, doc } from "firebase/firestore"
 import { useNavigate } from "react-router-dom"
 
 const schemaUser = z.object({
@@ -31,11 +33,24 @@ export function Register() {
       createUserWithEmailAndPassword(auth, data.email, data.password)
          .then((UserCredential) => {
             const user = UserCredential.user
+            const userRef = doc(db, "users", `${user.uid}`)
+            addDoc(collection(userRef, "userInfo"), {
+               idUser: user.uid,
+               email: user.email,
+               username: data.username,
+               fullname: null,
+               description: null,
+               photo: null,
+               wishes: null,
+               birthday: null,
+               dateCreated: new Date(),
+            })
+
             updateProfile(user, {
                displayName: data.username
             })
             console.log("REGISTRADO COM SUCESSO")
-            navigate("/profile")
+            navigate('/register/almost')
          })
          .catch((error) => {
             console.log("ALGUMA COISA DEU ERRADO NO CADASTRO", error)

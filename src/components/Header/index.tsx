@@ -10,7 +10,7 @@ export function Header() {
    const [enableInput, setEnableInput] = useState<boolean>(false)
    const [enableNavExpansion, setEnableNavExpansion] = useState<boolean>(false)
    const [searchUser, setSearchUser] = useState<string>("")
-   const { loadingAuth, user } = useContext(AuthContext)
+   const { user } = useContext(AuthContext)
 
    function handleInput() {
       if (!enableInput) {
@@ -33,7 +33,7 @@ export function Header() {
    }
 
    return (
-      <header className='fixed w-full top-0 z-10 h-header flex items-center'>
+      <header className='fixed w-full top-0 z-10 h-header flex items-center bg-bg_color'>
          <div className='flex justify-between items-center w-full max-w-6xl mx-auto px-4'>
             <Link to="/">
                <img
@@ -61,13 +61,13 @@ export function Header() {
 
                      {enableNavExpansion && (
                         <div
-                           className='absolute w-full flex flex-col gap-2 justify-center text-center left-0 top-0 pt-11 rounded-lg'
+                           className='absolute w-full flex flex-col justify-center text-center left-0 top-0 pt-11 rounded-lg'
                            onMouseLeave={handleNavExpansion}
                         >
-                           <span className='hover:bg-main_color hover:text-bg_color block sm:hidden'>SOBRE</span>
-                           <span className='hover:bg-main_color hover:text-bg_color'>TIMELINE</span>
-                           <span className='hover:bg-main_color hover:text-bg_color'>USERS</span>
-                           <span className='hover:bg-main_color hover:text-bg_color rounded-b-lg'>GAMES</span>
+                           <span className='bg-bg_color py-2 hover:bg-main_color hover:text-bg_color block sm:hidden'>SOBRE</span>
+                           <span className='bg-bg_color py-2 hover:bg-main_color hover:text-bg_color'>TIMELINE</span>
+                           <span className='bg-bg_color py-2 hover:bg-main_color hover:text-bg_color'>USERS</span>
+                           <span className='bg-bg_color py-2 hover:bg-main_color hover:text-bg_color rounded-b-lg'>GAMES</span>
                         </div>
                      )}
 
@@ -97,7 +97,7 @@ export function Header() {
                </div>
 
                {user ? (
-                  <Link to="/profile">
+                  <Link to={`/profile/${user.idUser}`}>
                      <FaUser
                         size={28}
                         className='text-main_color cursor-pointer'

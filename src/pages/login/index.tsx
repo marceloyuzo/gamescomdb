@@ -45,7 +45,7 @@ export function Login() {
       signInWithEmailAndPassword(auth, data.email, data.password)
          .then((userCredential) => {
             console.log("Logado com sucesso", userCredential)
-            navigate("/profile")
+            navigate(`/profile/${userCredential.user.uid}`)
             return
          })
          .catch((error) => {

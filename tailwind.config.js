@@ -17,13 +17,23 @@ export default {
         'header': '10dvh',
         'body': '90dvh',
         '680': '680px'
-
+      },
+      lineClamp: {
+        3: '3',
+        10: '10'
       }
     },
     borderWidth: {
       '1': '1px',
     }
   },
-  plugins: [],
+  variants: {
+    extend: {
+      lineClamp: ['responsive', 'hover'],
+    },
+  },
+  plugins: [
+    require('@tailwindcss/line-clamp'),
+  ],
 }
 

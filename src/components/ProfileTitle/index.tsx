@@ -1,4 +1,4 @@
-import { collection, getDocs } from "firebase/firestore"
+import { doc, getDoc } from "firebase/firestore"
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { db } from "../../services/firebaseConnection"
@@ -23,26 +23,23 @@ export function ProfileTitle({ title }: { title: string }) {
 
 
   async function loadUserInfo() {
-    const userInfoRef = collection(db, "users", `${userAuth.id}`, "userInfo")
+    const userInfoRef = doc(db, "users", `${userAuth.id}`)
 
-    await getDocs(userInfoRef)
+    await getDoc(userInfoRef)
       .then((snapshot) => {
         let userInfoTemp: InfoSideProps | null = null
 
-        snapshot.forEach((doc) => {
-          userInfoTemp = ({
-            idUser: doc.data().idUser,
-            username: doc.data().username,
-            photo: doc.data().photo
-          })
+        userInfoTemp = ({
+          idUser: snapshot.data()?.idUser,
+          username: snapshot.data()?.username,
+          photo: snapshot.data()?.photo
         })
 
-        if (!userInfoTemp) {
-          return
-        }
+
         setUserInfo(userInfoTemp)
       })
       .catch((error) => console.log(error))
+
   }
 
   return (

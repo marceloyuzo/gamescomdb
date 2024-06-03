@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { collection, doc, getDocs, query, updateDoc, where } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { db, storage } from "../../../services/firebaseConnection";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { v4 as uuidV4 } from 'uuid'
@@ -30,16 +30,11 @@ interface ImageProps {
 export function CompleteRegister() {
   const navigate = useNavigate()
   const { user } = useContext(AuthContext)
-  const [docRef, setDocRef] = useState<string>("")
   const [photo, setPhoto] = useState<ImageProps>()
   const { handleSubmit, register, formState: { errors } } = useForm<RegisterData>({
     resolver: zodResolver(schema),
     mode: "onBlur"
   })
-
-  useEffect(() => {
-    searchUserInfo()
-  }, [])
 
   function handleSkip() {
     if (!user) {
@@ -49,19 +44,10 @@ export function CompleteRegister() {
     navigate(`/profile/${user.idUser}`)
   }
 
-  async function searchUserInfo() {
-    const userRef = collection(db, "users", `${user?.idUser}`, "userInfo")
-    const queryRef = query(userRef, where("idUser", "==", user?.idUser))
-
-    const snapshot = await getDocs(queryRef)
-    snapshot.forEach(doc => {
-      setDocRef(doc.id)
-    })
-  }
-
   async function handleInfoRegister(data: RegisterData) {
+    console.log(data)
     try {
-      await updateDoc(doc(db, "users", `${user?.idUser}`, "userInfo", docRef), {
+      await updateDoc(doc(db, "users", `${user?.idUser}`), {
         fullname: data.fullname,
         birthday: data.birthday,
         photo: photo

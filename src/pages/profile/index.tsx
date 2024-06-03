@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "../../contexts/AuthContext"
 import { Container } from "../../components/Container"
 import { SideMenu } from "../../components/SideMenu"
-import { Link, useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import Modal from "../../components/Modal"
 import { GamesPlayedContext } from "../../contexts/GamesPlayedContext"
 import { collection, getDocs, limit, orderBy, query } from "firebase/firestore"
@@ -24,6 +24,10 @@ export function Profile() {
       }
 
    }, [limitLoad, userAuth])
+
+   if (!userAuth.id) {
+      return null
+   }
 
    // async function loadListGamesPlayed() {
    //    const usersRef = collection(db, "users", `${userAuth.id}`, "activities")
@@ -73,7 +77,7 @@ export function Profile() {
    return (
       <Container>
          <main className="mt-header w-full flex gap-4 justify-center items-start py-16">
-            <SideMenu></SideMenu>
+            <SideMenu idUser={userAuth.id}></SideMenu>
             <div className="w-full flex flex-col gap-4">
 
                <section className="w-full p-6 flex flex-col border-1 rounded-lg">

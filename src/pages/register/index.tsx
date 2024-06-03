@@ -6,7 +6,7 @@ import { z } from "zod"
 import { auth } from "../../services/firebaseConnection"
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth"
 import { db } from "../../services/firebaseConnection"
-import { addDoc, collection, doc } from "firebase/firestore"
+import { collection, doc, getDocs, query, setDoc, where } from "firebase/firestore"
 import { useNavigate } from "react-router-dom"
 
 const schemaUser = z.object({
@@ -29,15 +29,25 @@ export function Register() {
       mode: "onBlur"
    })
 
-   function registerSubmit(data: FormData) {
+   async function registerSubmit(data: FormData) {
+      const usersRef = collection(db, "users")
+      const queryRef = query(usersRef, where("username", "==", data.username))
+
+      const snapshot = await getDocs(queryRef)
+      if (!snapshot.empty) {
+         console.log("JA EXISTE UM USUARIO COM ESSE USERNAME")
+         return
+      }
+
       createUserWithEmailAndPassword(auth, data.email, data.password)
          .then((UserCredential) => {
             const user = UserCredential.user
             const userRef = doc(db, "users", `${user.uid}`)
-            addDoc(collection(userRef, "userInfo"), {
+            setDoc(userRef, {
                idUser: user.uid,
                email: user.email,
                username: data.username,
+               privacy: "PUBLIC",
                fullname: null,
                description: null,
                photo: null,
@@ -55,6 +65,8 @@ export function Register() {
          .catch((error) => {
             console.log("ALGUMA COISA DEU ERRADO NO CADASTRO", error)
          })
+
+
    }
 
    return (

@@ -4,7 +4,7 @@ interface InputFormProps {
   type: string,
   placeholder: string,
   name: string,
-  register: UseFormRegister<any>
+  register: UseFormRegister<any>,
   error?: string,
   rules?: RegisterOptions
 }

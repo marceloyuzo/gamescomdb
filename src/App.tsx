@@ -8,6 +8,7 @@ import { Profile } from "./pages/profile"
 import { ListGames } from "./pages/list/games"
 import { Reviews } from "./pages/list/reviews"
 import { NewReview } from "./pages/list/reviews/new"
+import { EditProfile } from "./pages/profile/editProfile"
 
 const router = createBrowserRouter([
   {
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
       {
         path: "/profile/:id",
         element: <Profile />
+      },
+      {
+        path: "/profile/:id/edit",
+        element: <EditProfile />
       },
       {
         path: "/profile/:id/reviews",

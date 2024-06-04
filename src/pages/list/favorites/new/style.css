@@ -1,0 +1,7 @@
+.div_container:hover {
+  opacity: 0.5;
+}
+
+.div_container:hover .icone_edit {
+  opacity: 1;
+}

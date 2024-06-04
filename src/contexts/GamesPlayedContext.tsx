@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDoc, getDocs, limit, orderBy, query, where } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, limit, orderBy, query, where } from "firebase/firestore";
 import { ReactNode, createContext, useContext, useEffect, useState } from "react";
 import { db } from "../services/firebaseConnection";
 import { AuthContext } from "./AuthContext";
@@ -17,6 +17,7 @@ type GamesPlayedContextData = {
   loadListGamesPlayed: (idUser: string) => void,
   addNewGamePlayed: (newGame: GamePlayedProps) => void,
   handleMoreLoad: () => void
+  deleteGamePlayed: (game: GamePlayedProps) => void
   //remGamePlayed: (game: GamePlayedProps) => void
 }
 
@@ -54,20 +55,23 @@ function GamesPlayedProvider({ children }: GamesPlayedProviderProps) {
       })
   }
 
-  // async function searchGame(game: GamePlayedProps) {
-  //   const ref = collection(db, "users", `${user?.idUser}`, "gamesPlayed")
-  //   const queryRef = query(ref, where("idGame", "==", game.idGame))
+  async function deleteGamePlayed(game: GamePlayedProps) {
+    const gamesRef = collection(db, "users", `${user?.idUser}`, "gamesPlayed")
+    const queryRef = query(gamesRef, where("idGame", "==", game.idGame))
 
-  //   const snapshot = await getDocs(queryRef)
 
-  //   if (snapshot.empty) {
-  //     console.log("NAO ACHEI")
-  //     return false
-  //   }
+    const snapshot = await getDocs(queryRef)
+    snapshot.forEach((snap) => {
+      let deleteRef = doc(db, "users", `${user?.idUser}`, "gamesPlayed", snap.id)
 
-  //   console.log("ACHEI")
-  //   return true
-  // }
+      deleteDoc(deleteRef)
+        .then(() => {
+          console.log("jogo deletado")
+          window.location.reload()
+        })
+    })
+
+  }
 
   function searchGame(game: GamePlayedProps): boolean {
     return myGamesPlayed.some(gp => gp.idGame === game.idGame)
@@ -109,7 +113,8 @@ function GamesPlayedProvider({ children }: GamesPlayedProviderProps) {
         limitLoad,
         addNewGamePlayed,
         handleMoreLoad,
-        loadListGamesPlayed
+        loadListGamesPlayed,
+        deleteGamePlayed
       }}
     >
       {children}

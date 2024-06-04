@@ -33,7 +33,7 @@ export function Header() {
    }
 
    return (
-      <header className='fixed w-full top-0 z-10 h-header flex items-center bg-bg_color'>
+      <header className='fixed w-full top-0 z-20 h-header flex items-center bg-bg_color'>
          <div className='flex justify-between items-center w-full max-w-6xl mx-auto px-4'>
             <Link to="/">
                <img

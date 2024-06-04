@@ -13,6 +13,7 @@ import { addDoc, collection } from "firebase/firestore";
 import { db } from "../../../../services/firebaseConnection";
 import { useNavigate } from "react-router-dom";
 import { apiSteam } from "../../../../services/api";
+import { IoIosArrowRoundBack } from "react-icons/io";
 
 const schema = z.object({
   review: z.string().min(1, "Escreva algo a respeito do jogo")
@@ -47,28 +48,33 @@ export function NewReview() {
   }, [user])
 
   async function postReview(data: ReviewData) {
-    const reviewRef = collection(db, "users", `${user?.idUser}`, "reviews")
-    const formatedDateCreated = formatDate()
-
     if (!selectGame) {
-      console.log("TESTE")
+      console.log("Nenhum jogo selecionado");
+      return;
+    }
+
+    const loadedGame = await getGame(selectGame.idGame);
+
+    if (!loadedGame) {
+      console.log("NA OCARREGOU")
       return
     }
-    await getGame(selectGame.idGame)
-    console.log(selectGame)
-    try {
 
-      addDoc(reviewRef, {
-        justify: data.review,
+    const reviewRef = collection(db, "users", `${user?.idUser}`, "reviews");
+    const formatedDateCreated = formatDate();
+
+    try {
+      await addDoc(reviewRef, {
+        justify: data.review.split('\n'),
         dateCreated: formatedDateCreated,
         status: selectGame?.status,
         idUser: user?.idUser,
-        idGame: gameInfo?.idGame,
-        title: gameInfo?.title,
-        cover: gameInfo?.cover,
-        release: gameInfo?.release,
-        publishers: gameInfo?.publishers,
-        developers: gameInfo?.developers
+        idGame: loadedGame?.idGame,
+        title: loadedGame?.title,
+        cover: loadedGame?.cover,
+        release: loadedGame?.release,
+        publishers: loadedGame?.publishers,
+        developers: loadedGame?.developers
       })
 
       console.log("REVIEW CADASTRADO COM SUCESSO.")
@@ -92,9 +98,11 @@ export function NewReview() {
       }
 
       setGameInfo(jogo)
+      return jogo
     }
     catch (error) {
       console.log(error)
+      return null
     }
   }
 
@@ -112,8 +120,17 @@ export function NewReview() {
     <>
       <Container>
         <main className="mt-header w-full py-16">
-          <div className="w-full border-1 flex justify-center items-center py-4 rounded-lg mb-6">
-            <h2 className="text-xl text-main_color">ADICIONAR REVIEW</h2>
+          <div className="relative w-full border-1 flex justify-end items-center py-4 rounded-lg mb-6 px-4">
+            <div className="absolute top-1/2 right-1/2 transform translate-x-1/2 -translate-y-1/2">
+              <h2 className="text-xl text-main_color">ADICIONAR REVIEW</h2>
+            </div>
+            <div className="">
+              <IoIosArrowRoundBack
+                size={36}
+                className="rounded-full text-main_color p-1 hover:bg-main_color hover:text-bg_color"
+                onClick={() => navigate(`/profile/${user?.idUser}`)}
+              />
+            </div>
           </div>
           <div className="w-full border-1 rounded-lg p-4 mb-6">
             <h2 className="text-xl text-main_color mb-4">SELECIONE O JOGO</h2>
@@ -130,6 +147,7 @@ export function NewReview() {
                 {myGamesPlayed.map((game) => (
                   <SwiperSlide>
                     <div
+                      key={game.idGame}
                       className="relative flex flex-col justify-center items-center gap-1 cursor-pointer div_container"
                       onClick={() => { setSelectGame(game) }}
                     >

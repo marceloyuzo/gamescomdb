@@ -9,6 +9,11 @@ import { ListGames } from "./pages/list/games"
 import { Reviews } from "./pages/list/reviews"
 import { NewReview } from "./pages/list/reviews/new"
 import { EditProfile } from "./pages/profile/editProfile"
+import { NewFavorite } from "./pages/list/favorites/new"
+import { Favorites } from "./pages/list/favorites"
+import { Private } from "./routes/Private"
+import { NotFound } from "./pages/notfound"
+import { GameDetail } from "./pages/gamedetail"
 
 const router = createBrowserRouter([
   {
@@ -28,7 +33,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/register/almost",
-        element: <CompleteRegister />
+        element: <Private><CompleteRegister /></Private>
+      },
+      {
+        path: "/game/:id",
+        element: <GameDetail />
       },
       {
         path: "/profile/:id",
@@ -36,7 +45,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/profile/:id/edit",
-        element: <EditProfile />
+        element: <Private><EditProfile /></Private>
       },
       {
         path: "/profile/:id/reviews",
@@ -44,13 +53,25 @@ const router = createBrowserRouter([
       },
       {
         path: "/profile/newreview",
-        element: <NewReview />
+        element: <Private><NewReview /></Private>
+      },
+      {
+        path: "/profile/:id/favorites",
+        element: <Favorites />
+      },
+      {
+        path: "/profile/newfavorite",
+        element: <Private><NewFavorite /></Private>
       },
       {
         path: "/profile/:id/gamesplayed",
         element: <ListGames />
       }
     ]
+  },
+  {
+    path: "*",
+    element: <NotFound />
   }
 ])
 

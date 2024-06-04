@@ -1,9 +1,10 @@
 import { ProfileTitle } from "../../../components/ProfileTitle"
 import { Container } from "../../../components/Container"
-import { useEffect, useState } from "react"
-import { collection, getDocs } from "firebase/firestore"
+import { useContext, useEffect, useState } from "react"
+import { collection, deleteDoc, doc, getDocs, query, where } from "firebase/firestore"
 import { db } from "../../../services/firebaseConnection"
 import { useParams } from "react-router-dom"
+import { AuthContext } from "../../../contexts/AuthContext"
 
 export interface ReviewsProps {
   idReview: string,
@@ -14,22 +15,23 @@ export interface ReviewsProps {
   release: string,
   dateCreated: string,
   status: string,
-  justify: string,
+  justify: string[],
   publishers: string[],
   developers: string[]
 }
 
 export function Reviews() {
   const [reviews, setReviews] = useState<ReviewsProps[]>([])
-  const userParam = useParams()
+  const userAuth = useParams()
+  const { user } = useContext(AuthContext)
 
   useEffect(() => {
     loadReviews()
-  }, [])
+  }, [userAuth])
 
   async function loadReviews() {
     try {
-      const snapshot = await getDocs(collection(db, "users", `${userParam.id}`, "reviews"))
+      const snapshot = await getDocs(collection(db, "users", `${userAuth.id}`, "reviews"))
 
       let listReview = [] as ReviewsProps[]
       console.log("Número de documentos recuperados:", snapshot.size);
@@ -57,6 +59,22 @@ export function Reviews() {
     }
   }
 
+  async function deleteReview(review: ReviewsProps) {
+    const reviewsRef = collection(db, "users", `${user?.idUser}`, "reviews")
+    const queryRef = query(reviewsRef, where("idGame", "==", review.idGame))
+
+    const snapshot = await getDocs(queryRef)
+    snapshot.forEach((snap) => {
+      let deleteRef = doc(db, "users", `${user?.idUser}`, "reviews", snap.id)
+
+      deleteDoc(deleteRef)
+        .then(() => {
+          console.log("review deletado")
+          window.location.reload()
+        })
+    })
+  }
+
   return (
     <>
       <Container>
@@ -65,13 +83,19 @@ export function Reviews() {
 
           {reviews && (
             <div className="w-full flex flex-col gap-4">
+
               {reviews.map((review) => (
                 <div className="w-full rounded-lg border-1 py-6" key={review.idReview}>
                   <div className="w-full flex justify-between items-center text-main_color text-2xl mb-4 px-10">
                     <h2>#{review.idReview}</h2>
-                    <button
-                      className="bg-main_color text-bg_color px-3 py-1 rounded-lg text-xl"
-                    >VER DETALHES</button>
+                    <div className="flex gap-3">
+                      {user?.idUser === userAuth.id && (
+                        <button
+                          className="bg-secundary_color text-bg_color px-3 py-1 rounded-lg text-xl font-medium"
+                          onClick={() => deleteReview(review)}
+                        >EXCLUIR</button>
+                      )}
+                    </div>
                   </div>
                   <div className="w-full flex gap-6 px-10">
                     <div className="relative flex flex-col items-center gap-1 mb-2 w-1/3">
@@ -103,7 +127,11 @@ export function Reviews() {
                       </div>
                     </div>
                     <div className="w-2/3 text-main_color text-2xl text-justify flex items-center">
-                      <p className="line-clamp-10">"{review.justify}"</p>
+                      <p className="">
+                        {review.justify.map((paragraph) => (
+                          <p>{paragraph}</p>
+                        ))}
+                      </p>
                     </div>
                   </div>
                 </div>

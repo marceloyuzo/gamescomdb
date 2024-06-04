@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../../services/firebaseConnection";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const schemaPersonal = z.object({
   fullname: z.string().optional(),
@@ -36,6 +36,7 @@ interface UserInfoProps {
 export function EditProfile() {
   const navigate = useNavigate()
   const { user } = useContext(AuthContext)
+  const userAuth = useParams()
   const [readOnly, setReadOnly] = useState<boolean>(true)
   const [userInfo, setUserInfo] = useState<UserInfoProps | null>()
   const { register: registerPersonal, setValue: setValuePersonal, handleSubmit: handlePersonal, formState: { errors: errorsPersonal } } = useForm<PersonalData>({
@@ -48,7 +49,12 @@ export function EditProfile() {
   })
 
   useEffect(() => {
+    if (user?.idUser !== userAuth.id) {
+      navigate(`/profile/${user?.idUser}/edit`)
+    }
+  }, [])
 
+  useEffect(() => {
     if (user?.idUser) {
       fetchData();
     }

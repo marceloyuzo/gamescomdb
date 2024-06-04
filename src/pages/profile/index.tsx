@@ -2,57 +2,75 @@ import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "../../contexts/AuthContext"
 import { Container } from "../../components/Container"
 import { SideMenu } from "../../components/SideMenu"
-import { useNavigate, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import Modal from "../../components/Modal"
 import { GamesPlayedContext } from "../../contexts/GamesPlayedContext"
-import { collection, getDocs, limit, orderBy, query } from "firebase/firestore"
+import { collection, getDocs, limit, orderBy, query, where } from "firebase/firestore"
 import { db } from "../../services/firebaseConnection"
 import { ReviewsProps } from "../list/reviews"
+import { GamesFavoritesProps } from "../list/favorites/new"
 
 export function Profile() {
    const navigate = useNavigate()
    const { user } = useContext(AuthContext)
    const { myGamesPlayed, loadListGamesPlayed, limitLoad } = useContext(GamesPlayedContext)
    const [review, setReview] = useState<ReviewsProps>()
+   const [favorites, setFavorites] = useState<GamesFavoritesProps[]>([])
    const userAuth = useParams()
    const [enableModal, setEnableModal] = useState<boolean>(false)
 
    useEffect(() => {
       if (userAuth.id) {
          loadListGamesPlayed(userAuth.id)
-         loadListReview()
       }
+      loadListReview()
+      loadListFavorite()
 
-   }, [limitLoad, userAuth])
+   }, [userAuth.id, limitLoad])
+
+   useEffect(() => {
+      searchUser()
+   }, [])
 
    if (!userAuth.id) {
       return null
    }
 
-   // async function loadListGamesPlayed() {
-   //    const usersRef = collection(db, "users", `${userAuth.id}`, "activities")
-   //    const limitedRef = query(usersRef, limit(9))
+   async function searchUser() {
+      const ref = collection(db, "users")
+      const queryRef = query(ref, where("idUser", "==", userAuth.id))
 
-   //    await getDocs(limitedRef)
-   //       .then((snapshot) => {
-   //          let listGamesPlayed = [] as GamePlayedProps[]
-   //          console.log("Número de documentos recuperados:", snapshot.size);
+      const snapshot = await getDocs(queryRef)
 
-   //          snapshot.forEach(doc => {
-   //             listGamesPlayed.push({
-   //                idGame: doc.data().idGame,
-   //                title: doc.data().title,
-   //                cover: doc.data().image,
-   //                status: doc.data().status
-   //             })
-   //          })
-   //          setGamesPlayed(listGamesPlayed)
-   //       })
-   // }
+      if (snapshot.empty) {
+         navigate("/notfound")
+         return
+      }
+   }
+
+   async function loadListFavorite() {
+      const favoritesRef = collection(db, "users", `${userAuth.id}`, "favorites")
+      const queryRef = query(favoritesRef, limit(3))
+      let listFavorite = [] as GamesFavoritesProps[]
+
+      const snapshot = await getDocs(queryRef)
+      snapshot.forEach(doc => {
+         listFavorite.push({
+            idGame: doc.data().idGame,
+            title: doc.data().title,
+            cover: doc.data().cover,
+            status: doc.data().status,
+            datePlayed: doc.data().datePlayed,
+            idRegister: doc.data().idRegister
+         })
+
+         setFavorites(listFavorite)
+      })
+   }
 
    async function loadListReview() {
-      const usersRef = collection(db, "users", `${userAuth.id}`, "reviews")
-      const queryRef = query(usersRef, orderBy("dateCreated", "desc"), limit(1))
+      const reviewsRef = collection(db, "users", `${userAuth.id}`, "reviews")
+      const queryRef = query(reviewsRef, orderBy("dateCreated", "desc"), limit(1))
 
       const snapshot = await getDocs(queryRef)
       snapshot.forEach(doc => {
@@ -108,15 +126,17 @@ export function Profile() {
                   <div className="grid grid-cols-1 gap-3 lg:grid-cols-3 md:grid-cols-2">
 
                      {myGamesPlayed.map((game) => (
-                        <div className="relative flex flex-col justify-center items-center gap-1" key={game.idGame}>
-                           <img
-                              className="rounded-md"
-                              src={game.cover}
-                              alt={game.title}
-                           />
-                           <span className={`absolute right-1 top-1 bg-bg_color px-3 py-0.5 text-xs rounded-lg ${game.status === "COMPLETE" ? "text-green-600" : "text-orange-600"}`}>{game.status}</span>
-                           <span className="text-lg text-main_color">{game.title}</span>
-                        </div>
+                        <Link to={`/game/${game.idGame}`}>
+                           <div className="relative flex flex-col justify-center items-center gap-1" key={game.idGame}>
+                              <img
+                                 className="rounded-md"
+                                 src={game.cover}
+                                 alt={game.title}
+                              />
+                              <span className={`absolute right-1 top-1 bg-bg_color px-3 py-0.5 text-xs rounded-lg ${game.status === "COMPLETE" ? "text-green-600" : "text-orange-600"}`}>{game.status}</span>
+                              <span className="text-lg text-main_color">{game.title}</span>
+                           </div>
+                        </Link>
                      )).slice(0, 9)}
 
 
@@ -172,14 +192,18 @@ export function Profile() {
                            </div>
                         </div>
                         <div className="w-1/2 text-main_color text-xl text-justify flex items-center">
-                           <p className="line-clamp-6">"{review.justify}"</p>
+                           <p className="line-clamp-6">
+                              {review.justify.map((paragraph) => (
+                                 <p>{paragraph}</p>
+                              ))}
+                           </p>
                         </div>
                      </div>
                   )}
 
                   {!review && (
                      <div className="text-center text-main_color text-xl mt-2">
-                        O usuário não possui reviews.
+                        NÃO POSSUI REVIEWS
                      </div>
                   )}
                </section>
@@ -191,39 +215,39 @@ export function Profile() {
                            <div className="flex justify-end">
                               <button
                                  className="text-lg bg-secundary_color px-4 py-0.5 rounded-lg font-medium"
+                                 onClick={() => navigate("/profile/newfavorite")}
                               >ADICIONAR FAVORITO</button>
                            </div>
                         )}
-                        <button className="text-lg bg-main_color px-4 py-0.5 rounded-lg font-medium">VER MAIS</button>
+                        <button className="text-lg bg-main_color px-4 py-0.5 rounded-lg font-medium"
+                           onClick={() => navigate(`/profile/${userAuth.id}/favorites`)}
+                        >VER MAIS</button>
 
                      </div>
                   </div>
-                  <div className="grid grid-cols-1 gap-3 lg:grid-cols-3 md:grid-cols-2">
-                     <div className="flex flex-col justify-center items-center gap-1">
-                        <img
-                           className=""
-                           src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/header.jpg?t=1716311593"
-                           alt="Foto do Jogo Favorito"
-                        />
-                        <span className="text-lg text-main_color">ELDEN RING</span>
+                  {favorites && (
+                     <div className="grid grid-cols-1 gap-3 lg:grid-cols-3 md:grid-cols-2">
+                        {favorites.map((favorite) => (
+                           <Link to={`/game/${favorite.idGame}`}>
+                              <div className="relative flex flex-col justify-center items-center gap-1">
+                                 <img
+                                    className=""
+                                    src={favorite.cover}
+                                    alt={favorite.title}
+                                 />
+                                 <span className={`absolute right-1 top-1 bg-bg_color px-3 py-0.5 text-xs rounded-lg ${favorite.status === "COMPLETE" ? "text-green-600" : "text-orange-600"}`}>{favorite.status}</span>
+                                 <span className="text-lg text-main_color">{favorite.title}  </span>
+                              </div>
+                           </Link>
+                        ))}
                      </div>
-                     <div className="flex flex-col justify-center items-center gap-1">
-                        <img
-                           className=""
-                           src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/header.jpg?t=1716311593"
-                           alt="Foto do Jogo Favorito"
-                        />
-                        <span className="text-lg text-main_color">ELDEN RING</span>
+
+                  )}
+                  {(favorites.length == 0) && (
+                     <div className="text-center text-main_color text-xl mt-2">
+                        NÃO POSSUI JOGOS FAVORITOS
                      </div>
-                     <div className="flex flex-col justify-center items-center gap-1">
-                        <img
-                           className=""
-                           src="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1245620/header.jpg?t=1716311593"
-                           alt="Foto do Jogo Favorito"
-                        />
-                        <span className="text-lg text-main_color">ELDEN RING</span>
-                     </div>
-                  </div>
+                  )}
                </section>
             </div>
          </main >

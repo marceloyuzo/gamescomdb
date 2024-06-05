@@ -149,13 +149,13 @@ export function GameDetail() {
             </div>
             <div className="w-1/2 p-4">
               <h2 className="text-2xl text-main_color">DESCRIÇÃO</h2>
-              <p className="text-lg text-main_color mt-2 text-justify">{gameInfo.shortDescription}</p>
+              <p className="text-lg text-main_color mt-2 text-justify indent-4">{gameInfo.shortDescription}</p>
             </div>
           </div>
           <div className="w-full p-4">
             <div className="w-full border-1 p-8 rounded-lg">
               <h2 className="text-2xl text-main_color">SOBRE O JOGO</h2>
-              <p className="text-lg text-main_color mt-2 text-justify" dangerouslySetInnerHTML={{ __html: gameInfo.about }}></p>
+              <p className="text-lg text-main_color mt-2 text-justify indent-4" dangerouslySetInnerHTML={{ __html: gameInfo.about }}></p>
 
             </div>
 

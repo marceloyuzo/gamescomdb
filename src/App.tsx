@@ -14,6 +14,7 @@ import { Favorites } from "./pages/list/favorites"
 import { Private } from "./routes/Private"
 import { NotFound } from "./pages/notfound"
 import { GameDetail } from "./pages/gamedetail"
+import { Users } from "./pages/users"
 
 const router = createBrowserRouter([
   {
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
       {
         path: "/register/almost",
         element: <Private><CompleteRegister /></Private>
+      },
+      {
+        path: "/users",
+        element: <Users />
       },
       {
         path: "/game/:id",

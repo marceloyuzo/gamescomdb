@@ -78,6 +78,11 @@ export function Favorites() {
               >CARREGAR MAIS</button>
             </div>
           )}
+          {favoriteGames.length == 0 && (
+            <div className="mt-header w-full">
+              <h1 className="fixed right-1/2 top-1/2 transform translate-x-1/2 -translate-y-1/2 text-4xl text-main_color ">NÃO POSSUI JOGOS FAVORITOS</h1>
+            </div>
+          )}
         </div>
 
       </Container>

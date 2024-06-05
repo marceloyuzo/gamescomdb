@@ -3,10 +3,11 @@ import { IoIosSearch } from "react-icons/io";
 import { FaSignInAlt, FaUser } from "react-icons/fa";
 import { IoIosArrowDown } from "react-icons/io";
 import { useState, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';
 
 export function Header() {
+   const navigate = useNavigate()
    const [enableInput, setEnableInput] = useState<boolean>(false)
    const [enableNavExpansion, setEnableNavExpansion] = useState<boolean>(false)
    const [searchUser, setSearchUser] = useState<string>("")
@@ -30,6 +31,13 @@ export function Header() {
 
       setEnableNavExpansion(false)
       return
+   }
+
+   function handleSearch(event: KeyboardEvent) {
+      if (event.key === "Enter") {
+         navigate(`/users?username=${searchUser}`)
+         setSearchUser("")
+      }
    }
 
    return (
@@ -64,10 +72,10 @@ export function Header() {
                            className='absolute w-full flex flex-col justify-center text-center left-0 top-0 pt-11 rounded-lg'
                            onMouseLeave={handleNavExpansion}
                         >
-                           <span className='bg-bg_color py-2 hover:bg-main_color hover:text-bg_color block sm:hidden'>SOBRE</span>
-                           <span className='bg-bg_color py-2 hover:bg-main_color hover:text-bg_color'>TIMELINE</span>
-                           <span className='bg-bg_color py-2 hover:bg-main_color hover:text-bg_color'>USERS</span>
-                           <span className='bg-bg_color py-2 hover:bg-main_color hover:text-bg_color rounded-b-lg'>GAMES</span>
+                           <span className='bg-bg_color py-2 hover:bg-main_color hover:text-bg_color block sm:hidden transition duration-300'>SOBRE</span>
+                           <span className='bg-bg_color py-2 hover:bg-main_color hover:text-bg_color transition duration-300 rounded-b-lg'
+                              onClick={() => navigate("/users")}
+                           >USERS</span>
                         </div>
                      )}
 
@@ -83,9 +91,10 @@ export function Header() {
                         type="text"
                         placeholder='Pesquisar Usuário...'
                         onBlur={handleInput}
-                        className="py-1 px-2 rounded-lg min-w-52 bg-bg_color border-main_color border-1"
+                        className="py-1 px-3 rounded-lg min-w-52 bg-bg_color border-main_color border-1 outline-none"
                         value={searchUser}
                         onChange={(e) => setSearchUser(e.target.value)}
+                        onKeyDown={(e) => handleSearch(e.nativeEvent)}
                      />
                   ) : (
                      <IoIosSearch

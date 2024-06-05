@@ -101,7 +101,7 @@ const Modal = ({ enableModal, onClose }: { enableModal: boolean, onClose: () => 
       return
     }
 
-    const filtered = games.filter((game) => game.name.toLowerCase().includes(inputSearch.trim().toLowerCase()))
+    const filtered = games.filter((game) => game.name.toLowerCase().startsWith(inputSearch.trim().toLowerCase()))
 
     setFilteredGames(filtered.slice(0, 20))
     return

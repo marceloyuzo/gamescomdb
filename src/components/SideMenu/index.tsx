@@ -42,8 +42,8 @@ export function SideMenu({ idUser }: { idUser: string }) {
   }
 
   function handleLogout() {
+    navigate("/")
     signOut(auth)
-    navigate("/login")
     return
   }
 
@@ -75,9 +75,9 @@ export function SideMenu({ idUser }: { idUser: string }) {
       < ul className="w-full flex flex-col justify-center items-center gap-4 mt-4 text-main_color text-xl mb-10">
         <li
           className="w-full text-center py-2 hover:border-1 cursor-pointer rounded-lg"
-          onClick={() => navigate(`/profile/${userAuth.id}/favorites`)}
+          onClick={() => navigate(`/profile/${userAuth.id}/gamesplayed`)}
         >
-          JOGOS FAVORITOS
+          LISTA DE JOGOS
         </li>
         <li
           className="w-full text-center py-2 hover:border-1 cursor-pointer rounded-lg"
@@ -87,9 +87,9 @@ export function SideMenu({ idUser }: { idUser: string }) {
         </li>
         <li
           className="w-full text-center py-2 hover:border-1 cursor-pointer rounded-lg"
-          onClick={() => navigate(`/profile/${userAuth.id}/gamesplayed`)}
+          onClick={() => navigate(`/profile/${userAuth.id}/favorites`)}
         >
-          LISTA DE JOGOS
+          JOGOS FAVORITOS
         </li>
       </ul>
 

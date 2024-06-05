@@ -9,6 +9,8 @@ import { auth } from "../../services/firebaseConnection";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { GoogleAuthProvider } from "firebase/auth/cordova";
 import { useNavigate } from "react-router-dom";
+import { useContext, useEffect } from "react";
+import { AuthContext } from "../../contexts/AuthContext";
 
 const schemaUser = z.object({
    email: z.string().email("Digite um email válido").min(1, "O campo email é obrigatório"),
@@ -21,12 +23,17 @@ type FormUser = z.infer<typeof schemaUser>
 
 export function Login() {
    const navigate = useNavigate()
+   const { user } = useContext(AuthContext)
    const { register, handleSubmit, formState: { errors } } = useForm<FormUser>({
       resolver: zodResolver(schemaUser),
       mode: "onBlur"
    })
 
-
+   useEffect(() => {
+      if (user) {
+         navigate(`/profile/${user.idUser}`)
+      }
+   }, [user])
 
    async function handleLoginWithGoogle() {
       // try {

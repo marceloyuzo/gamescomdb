@@ -8,6 +8,8 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth"
 import { db } from "../../services/firebaseConnection"
 import { collection, doc, getDocs, query, setDoc, where } from "firebase/firestore"
 import { useNavigate } from "react-router-dom"
+import { useContext, useEffect } from "react"
+import { AuthContext } from "../../contexts/AuthContext"
 
 const schemaUser = z.object({
    username: z.string().min(1, "O campo usuário é obrigatório"),
@@ -23,11 +25,18 @@ const schemaUser = z.object({
 type FormData = z.infer<typeof schemaUser>
 
 export function Register() {
+   const { user } = useContext(AuthContext)
    const navigate = useNavigate()
    const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
       resolver: zodResolver(schemaUser),
       mode: "onBlur"
    })
+
+   useEffect(() => {
+      if (user) {
+         navigate(`/profile/${user.idUser}`)
+      }
+   }, [user])
 
    async function registerSubmit(data: FormData) {
       const usersRef = collection(db, "users")

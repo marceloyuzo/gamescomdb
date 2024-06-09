@@ -61,7 +61,7 @@ export function EditProfile() {
   }, [user?.idUser, setValuePersonal]);
 
   async function fetchData() {
-    const info: UserInfoProps = await loadUserInfo();
+    const info: UserInfoProps | null = await loadUserInfo();
 
     if (info) {
       setUserInfo(info)

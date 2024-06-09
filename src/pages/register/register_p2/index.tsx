@@ -4,7 +4,7 @@ import { Container } from "../../../components/Container"
 import { InputForm } from "../../../components/InputForm"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { ChangeEvent, useContext, useEffect, useState } from "react";
+import { ChangeEvent, useContext, useState } from "react";
 import { AuthContext } from "../../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { doc, updateDoc } from "firebase/firestore";

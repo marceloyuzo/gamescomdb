@@ -33,10 +33,9 @@ interface GamesReviewProps {
 export function NewReview() {
   const navigate = useNavigate()
   const [selectGame, setSelectGame] = useState<GamePlayedProps>()
-  const [gameInfo, setGameInfo] = useState<GamesReviewProps>()
   const { myGamesPlayed, loadListGamesPlayed } = useContext(GamesPlayedContext)
   const { user } = useContext(AuthContext)
-  const { handleSubmit, register, formState: { errors } } = useForm<ReviewData>({
+  const { handleSubmit, register } = useForm<ReviewData>({
     resolver: zodResolver(schema),
     mode: "onBlur"
   })
@@ -97,7 +96,6 @@ export function NewReview() {
         developers: response.data[idGame].data.developers
       }
 
-      setGameInfo(jogo)
       return jogo
     }
     catch (error) {

@@ -4,11 +4,7 @@ import { apiSteam } from "../../services/api"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { addDoc, collection, doc } from "firebase/firestore"
-import { db } from "../../services/firebaseConnection"
 import { useContext } from "react"
-import { AuthContext } from "../../contexts/AuthContext"
-import { useNavigate } from "react-router-dom";
 import { GamesPlayedContext } from "../../contexts/GamesPlayedContext";
 import { GamePlayedProps } from "../../contexts/GamesPlayedContext";
 
@@ -30,15 +26,13 @@ const schema = z.object({
 type FormActivity = z.infer<typeof schema>
 
 const Modal = ({ enableModal, onClose }: { enableModal: boolean, onClose: () => void }) => {
-  const navigate = useNavigate()
-  const { user } = useContext(AuthContext)
   const { addNewGamePlayed } = useContext(GamesPlayedContext)
   const [games, setGames] = useState<GamesProps[]>([])
   const [filteredGames, setFilteredGames] = useState<GamesProps[]>([])
   const [inputSearch, setInputSearch] = useState("")
   const [activeGame, setActiveGame] = useState<GameProps>()
   const [loading, setLoading] = useState(false)
-  const { register, handleSubmit, formState: { errors } } = useForm<FormActivity>({
+  const { register, handleSubmit } = useForm<FormActivity>({
     resolver: zodResolver(schema),
     mode: "onBlur"
   })

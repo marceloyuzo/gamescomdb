@@ -1,6 +1,6 @@
 
 
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { Container } from "../../../components/Container"
 import { ProfileTitle } from "../../../components/ProfileTitle"
 import { useParams } from "react-router-dom"

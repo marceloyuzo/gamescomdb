@@ -18,36 +18,47 @@ export function ProfileTitle({ title }: { title: string }) {
 
   useEffect(() => {
     loadUserInfo()
-  }, [])
+  }, [userAuth])
 
 
 
   async function loadUserInfo() {
-    const userInfoRef = doc(db, "users", `${userAuth.id}`)
+    const userRef = doc(db, "users", `${userAuth.id}`)
 
-    await getDoc(userInfoRef)
+    await getDoc(userRef)
       .then((snapshot) => {
-        let userInfoTemp: InfoSideProps | null = null
-
-        userInfoTemp = ({
+        let tempInfo: InfoSideProps | null = null
+        tempInfo = ({
           idUser: snapshot.data()?.idUser,
           username: snapshot.data()?.username,
-          photo: snapshot.data()?.photo
+          photo: snapshot.data()?.photo.url
         })
 
-
-        setUserInfo(userInfoTemp)
+        setUserInfo(tempInfo)
       })
-      .catch((error) => console.log(error))
-
+      .catch((error) => {
+        console.log(error)
+      })
   }
+
 
   return (
     <>
       {userInfo && (
         <div className="relative w-full border-1 rounded-lg py-4 px-6 mb-10 flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <FaUser size={36} className="rounded-full p-2 text-bg_color bg-main_color" />
+            {!userInfo?.photo && (
+              <FaUser size={36} className="rounded-full border-1 p-4 text-slate-300 bg-bg_color -top-24 z-10" />
+            )}
+            {userInfo?.photo && (
+              <div className="rounded-full border-1 z-10 size-14 overflow-hidden">
+                <img
+                  className="rounded-full object-cover w-full h-full"
+                  src={userInfo?.photo}
+                  alt="Foto de Perfil"
+                />
+              </div>
+            )}
             <span className="text-main_color text-xl">{userInfo.username}</span>
           </div>
           <div className="absolute top-1/2 right-1/2 transform translate-x-1/2 -translate-y-1/2">

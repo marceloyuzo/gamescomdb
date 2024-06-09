@@ -123,7 +123,7 @@ export function Profile() {
                            {(user?.idUser === userAuth.id) && (
                               <div className="flex justify-end">
                                  <button
-                                    className="text-lg bg-secundary_color px-4 py-0.5 rounded-lg font-medium"
+                                    className="text-lg bg-secundary_color text-main_color font-light px-4 py-0.5 rounded-lg"
                                     onClick={() => setEnableModal(true)}
                                  >ADICIONAR JOGO</button>
                                  <Modal enableModal={enableModal} onClose={() => setEnableModal(false)} />
@@ -168,7 +168,7 @@ export function Profile() {
                            {(user?.idUser === userAuth.id) && (
                               <div className="flex justify-end">
                                  <button
-                                    className="text-lg bg-secundary_color px-4 py-0.5 rounded-lg font-medium"
+                                    className="text-lg bg-secundary_color text-main_color font-light px-4 py-0.5 rounded-lg "
                                     onClick={() => navigate("/profile/newreview")}
                                  >ADICIONAR REVIEW</button>
                               </div>
@@ -232,7 +232,7 @@ export function Profile() {
                            {(user?.idUser === userAuth.id) && (
                               <div className="flex justify-end">
                                  <button
-                                    className="text-lg bg-secundary_color px-4 py-0.5 rounded-lg font-medium"
+                                    className="text-lg bg-secundary_color text-main_color font-light px-4 py-0.5 rounded-lg"
                                     onClick={() => navigate("/profile/newfavorite")}
                                  >ADICIONAR FAVORITO</button>
                               </div>

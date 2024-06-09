@@ -95,7 +95,7 @@ export function SideMenu({ idUser }: { idUser: string }) {
 
       {(user?.idUser === idUser) && (
         <button
-          className="w-full bg-secundary_color text-bg_color font-bold rounded-lg h-10 mt-4"
+          className="w-full bg-secundary_color text-main_color font-medium rounded-lg h-10 mt-4"
           onClick={() => handleLogout()}
         >FINALIZAR SESSÃO</button>
       )}

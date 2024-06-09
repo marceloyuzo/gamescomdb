@@ -21,10 +21,14 @@ export default {
       lineClamp: {
         3: '3',
         10: '10'
-      }
+      },
     },
     borderWidth: {
       '1': '1px',
+      '0.5': '0.5px'
+    },
+    borderOpacity: {
+      
     }
   },
   variants: {

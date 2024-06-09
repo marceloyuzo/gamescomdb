@@ -80,7 +80,10 @@ export function Header() {
                      )}
 
                   </li>
-                  <li className='items-center gap-1 cursor-pointer py-1 px-4 rounded-lg hover:border-1 hidden sm:block'>
+                  <li
+                     className='items-center gap-1 cursor-pointer py-1 px-4 rounded-lg hover:border-1 hidden sm:block'
+                     onClick={() => navigate("/#about")}
+                  >
                      SOBRE
                   </li>
                </ul>

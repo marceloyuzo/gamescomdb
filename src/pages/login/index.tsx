@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Link } from "react-router-dom"
 import { auth } from "../../services/firebaseConnection";
-import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { browserLocalPersistence, browserSessionPersistence, setPersistence, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { GoogleAuthProvider } from "firebase/auth/cordova";
 import { useNavigate } from "react-router-dom";
 import { useContext, useEffect } from "react";
@@ -49,17 +49,16 @@ export function Login() {
    }
 
    function handleLoginWithEmail(data: FormUser) {
-      signInWithEmailAndPassword(auth, data.email, data.password)
-         .then((userCredential) => {
-            console.log("Logado com sucesso", userCredential)
-            navigate(`/profile/${userCredential.user.uid}`)
-            return
-         })
-         .catch((error) => {
-            console.log("Ocorreu um erro ao logar", error)
-            return
+
+      const persistence = data.remember ? browserLocalPersistence : browserSessionPersistence
+
+      setPersistence(auth, persistence)
+         .then(() => {
+            return signInWithEmailAndPassword(auth, data.email, data.password)
          })
    }
+
+
 
    return (
       <Container>

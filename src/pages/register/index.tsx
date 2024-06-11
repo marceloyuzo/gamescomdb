@@ -59,7 +59,12 @@ export function Register() {
                privacy: "PUBLIC",
                fullname: null,
                description: null,
-               photo: null,
+               photo: {
+                  name: null,
+                  uid: null,
+                  previewUrl: null,
+                  url: null
+               },
                wishes: null,
                birthday: null,
                dateCreated: new Date(),
@@ -80,7 +85,7 @@ export function Register() {
 
    return (
       <Container>
-         <div className="h-body mt-header w-full flex flex-col justify-center items-center">
+         <div className="min-h-body mt-header w-full flex flex-col justify-center items-center">
             <h1 className="text-4xl text-main_color font-semibold mb-10">QUERO FAZER O CADASTRO</h1>
             <form
                className="w-full max-w-96 text-main_color flex flex-col gap-6"

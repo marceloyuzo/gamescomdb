@@ -5,6 +5,7 @@ import { collection, deleteDoc, doc, getDocs, query, where } from "firebase/fire
 import { db } from "../../../services/firebaseConnection"
 import { useParams } from "react-router-dom"
 import { AuthContext } from "../../../contexts/AuthContext"
+import ModalFeedback from "../../../components/ModalFeedback"
 
 export interface ReviewsProps {
   idReview: string,
@@ -22,6 +23,10 @@ export interface ReviewsProps {
 
 export function Reviews() {
   const [reviews, setReviews] = useState<ReviewsProps[]>([])
+  const [enableFeedback, setEnableFeedback] = useState<boolean>(false)
+  const [sucess, setSucess] = useState<boolean>(false)
+  const [textFeedback, setTextFeedback] = useState<string>("")
+  const [linkRef, setLinkRef] = useState<string>("")
   const userAuth = useParams()
   const { user } = useContext(AuthContext)
 
@@ -69,8 +74,16 @@ export function Reviews() {
 
       deleteDoc(deleteRef)
         .then(() => {
-          console.log("review deletado")
-          window.location.reload()
+          setSucess(true)
+          setEnableFeedback(true)
+          setTextFeedback("Review removido com sucesso!")
+          setLinkRef(`/profile/${user?.idUser}/reviews`)
+        })
+        .catch(() => {
+          setSucess(false)
+          setEnableFeedback(true)
+          setTextFeedback("Ocorreu um erro ao remover a review.")
+          setLinkRef(`/profile/${user?.idUser}/reviews`)
         })
     })
   }
@@ -78,7 +91,7 @@ export function Reviews() {
   return (
     <>
       <Container>
-        <main className="mt-header py-10 w-full">
+        <main className="min-h-body mt-header py-10 w-full">
           <ProfileTitle title={"REVIEWS"} />
 
           {reviews && (
@@ -127,11 +140,11 @@ export function Reviews() {
                       </div>
                     </div>
                     <div className="w-2/3 text-main_color text-2xl text-justify flex items-center">
-                      <p className="indent-4">
+                      <div className="indent-4">
                         {review.justify.map((paragraph) => (
-                          <p>{paragraph}</p>
+                          <p key={paragraph}>{paragraph}</p>
                         ))}
-                      </p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -140,9 +153,11 @@ export function Reviews() {
           )}
           {reviews.length == 0 && (
             <div className="mt-header w-full">
-              <h1 className="fixed right-1/2 top-1/2 transform translate-x-1/2 -translate-y-1/2 text-4xl text-main_color ">NÃO POSSUI REVIEWS</h1>
+              <h1 className="absolute right-1/2 top-1/2 transform translate-x-1/2 translate-y-1/2 text-4xl text-main_color ">NÃO POSSUI REVIEWS</h1>
             </div>
           )}
+
+          <ModalFeedback enableFeedback={enableFeedback} onClose={() => setEnableFeedback(false)} sucess={sucess} text={textFeedback} linkref={linkRef} />
         </main>
       </Container>
     </>

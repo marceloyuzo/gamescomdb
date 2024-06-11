@@ -15,14 +15,19 @@ type GamesPlayedContextData = {
   myGamesPlayed: GamePlayedProps[],
   limitLoad: number,
   loadListGamesPlayed: (idUser: string) => void,
-  addNewGamePlayed: (newGame: GamePlayedProps) => void,
+  addNewGamePlayed: (newGame: GamePlayedProps) => Promise<FeedbackResult>,
   handleMoreLoad: () => void
-  deleteGamePlayed: (game: GamePlayedProps) => void
-  //remGamePlayed: (game: GamePlayedProps) => void
+  deleteGamePlayed: (game: GamePlayedProps) => Promise<boolean>
 }
 
 interface GamesPlayedProviderProps {
   children: ReactNode
+}
+
+interface FeedbackResult {
+  sucess: boolean,
+  textFeedback: string,
+  linkRef: string
 }
 
 export const GamesPlayedContext = createContext({} as GamesPlayedContextData)
@@ -55,51 +60,72 @@ function GamesPlayedProvider({ children }: GamesPlayedProviderProps) {
       })
   }
 
-  async function deleteGamePlayed(game: GamePlayedProps) {
+  async function deleteGamePlayed(game: GamePlayedProps): Promise<boolean> {
     const gamesRef = collection(db, "users", `${user?.idUser}`, "gamesPlayed")
     const queryRef = query(gamesRef, where("idGame", "==", game.idGame))
 
+    try {
+      const snapshot = await getDocs(queryRef)
+      const deletePromises = snapshot.docs.map(async (snap) => {
+        const deleteRef = doc(db, "users", `${user?.idUser}`, "gamesPlayed", snap.id)
+        await deleteDoc(deleteRef)
+      })
+
+      await Promise.all(deletePromises)
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  async function searchGame(game: GamePlayedProps): Promise<boolean> {
+    const gamesRef = collection(db, "users", `${user?.idUser}`, "gamesPlayed")
+    const queryRef = query(gamesRef, where("idGame", "==", game.idGame))
 
     const snapshot = await getDocs(queryRef)
-    snapshot.forEach((snap) => {
-      let deleteRef = doc(db, "users", `${user?.idUser}`, "gamesPlayed", snap.id)
-
-      deleteDoc(deleteRef)
-        .then(() => {
-          console.log("jogo deletado")
-          window.location.reload()
-        })
-    })
-
+    return !snapshot.empty
   }
 
-  function searchGame(game: GamePlayedProps): boolean {
-    return myGamesPlayed.some(gp => gp.idGame === game.idGame)
-  }
-
-  async function addNewGamePlayed(newGame: GamePlayedProps) {
+  async function addNewGamePlayed(newGame: GamePlayedProps): Promise<FeedbackResult> {
     const ref = doc(db, "users", `${user?.idUser}`)
     const gameInList = await searchGame(newGame)
 
     if (gameInList) {
-      console.log("O jogo já está em sua lista de jogos jogados.")
-      return
+      const feedbackResultTemp: FeedbackResult = {
+        sucess: false,
+        textFeedback: "O jogo já está em sua lista.",
+        linkRef: `/profile/${user?.idUser}`
+      }
+
+      console.log("REPETIDO")
+      return feedbackResultTemp
     }
 
-    addDoc(collection(ref, "gamesPlayed"), {
-      idGame: newGame.idGame,
-      title: newGame.title,
-      cover: newGame.cover,
-      status: newGame.status,
-      datePlayed: new Date()
-    })
-      .then(() => {
-        console.log("ATIVIDADE CADASTRADA COM SUCESSO!")
-        window.location.reload();
+    try {
+      await addDoc(collection(ref, "gamesPlayed"), {
+        idGame: newGame.idGame,
+        title: newGame.title,
+        cover: newGame.cover,
+        status: newGame.status,
+        datePlayed: new Date()
       })
-      .catch((error) => {
-        console.log(error)
-      })
+
+      const feedbackResultTemp: FeedbackResult = {
+        sucess: true,
+        textFeedback: "Jogo cadastrado com sucesso.",
+        linkRef: `/profile/${user?.idUser}`
+      }
+
+      return feedbackResultTemp
+    } catch (error) {
+      const feedbackResultTemp: FeedbackResult = {
+        sucess: false,
+        textFeedback: "Ocorreu um erro ao cadastrar o jogo.",
+        linkRef: `/profile/${user?.idUser}`
+      }
+
+      return feedbackResultTemp
+    }
   }
 
   function handleMoreLoad() {

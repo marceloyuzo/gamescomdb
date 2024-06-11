@@ -5,11 +5,13 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { Link } from "react-router-dom"
-import { auth } from "../../services/firebaseConnection";
-import { browserLocalPersistence, browserSessionPersistence, setPersistence, signInWithEmailAndPassword } from "firebase/auth";
+import { auth, db } from "../../services/firebaseConnection";
+import { browserLocalPersistence, browserSessionPersistence, setPersistence, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { useContext, useEffect } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
+import { GoogleAuthProvider } from "firebase/auth";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 const schemaUser = z.object({
    email: z.string().email("Digite um email válido").min(1, "O campo email é obrigatório"),
@@ -34,17 +36,54 @@ export function Login() {
       }
    }, [user])
 
-   async function handleLoginWithGoogle() {
-      // try {
-      //    const provider = new GoogleAuthProvider();
-      //    const result = await signInWithPopup(auth, provider)
-      //       .then((usercredential) => {
-      //          console.log("LOGADO COM SUCESSO");
-      //          navigate("/");
-      //       })
-      // } catch (error) {
-      //    console.error("Erro ao fazer login com o Google:", error);
-      // }
+   function handleLoginWithGoogle() {
+      const provider = new GoogleAuthProvider()
+
+      signInWithPopup(auth, provider)
+         .then(async (UserCredential) => {
+            const user = UserCredential.user
+            const userRef = doc(db, "users", user.uid)
+
+            if (await searchUser(user.uid)) {
+               navigate(`/`)
+               return
+            }
+
+            await setDoc(userRef, {
+               idUser: user.uid,
+               email: user.email,
+               username: user.displayName,
+               privacy: "PUBLIC",
+               fullname: null,
+               description: null,
+               photo: {
+                  name: null,
+                  uid: null,
+                  previewUrl: null,
+                  url: null
+               },
+               wishes: null,
+               birthday: null,
+               dateCreated: new Date(),
+            })
+
+            navigate('/register/almost')
+            return
+         })
+         .catch((error) => {
+            console.log(error)
+         })
+   }
+
+   async function searchUser(id: string) {
+      const userRef = doc(db, "users", id)
+      const snapshot = await getDoc(userRef)
+
+      if (snapshot.exists()) {
+         return true
+      }
+
+      return false
    }
 
    function handleLoginWithEmail(data: FormUser) {
@@ -61,7 +100,7 @@ export function Login() {
 
    return (
       <Container>
-         <div className="h-body mt-header flex flex-col justify-center items-center">
+         <div className="min-h-body mt-header flex flex-col justify-center items-center">
             <h1 className="text-4xl text-main_color font-semibold mb-10">TENHO CADASTRO</h1>
 
             <form

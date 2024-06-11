@@ -107,12 +107,12 @@ export function Profile() {
    return (
       <Container>
          {(privacy === "PRIVATE" && userAuth.id !== user?.idUser) ? (
-            <div className="mt-header w-full">
+            <div className="min-h-body mt-header w-full">
                <h1 className="fixed right-1/2 top-1/2 transform translate-x-1/2 -translate-y-1/2 text-4xl text-main_color ">ESSE PERFIL É PRIVADO :(</h1>
             </div>
          ) : (
 
-            <main className="mt-header w-full flex gap-4 justify-center items-start py-16">
+            <main className="min-h-body mt-header w-full flex gap-4 justify-center items-start py-16">
                <SideMenu idUser={userAuth.id}></SideMenu>
                <div className="w-full flex flex-col gap-4">
 
@@ -144,7 +144,7 @@ export function Profile() {
                      <div className="grid grid-cols-1 gap-3 lg:grid-cols-3 md:grid-cols-2">
 
                         {myGamesPlayed.map((game) => (
-                           <Link to={`/game/${game.idGame}`}>
+                           <Link to={`/game/${game.idGame}`} key={game.idGame}>
                               <div className="relative flex flex-col justify-center items-center gap-1" key={game.idGame}>
                                  <img
                                     className="rounded-md"
@@ -210,11 +210,11 @@ export function Profile() {
                               </div>
                            </div>
                            <div className="w-1/2 text-main_color text-xl text-justify flex items-center">
-                              <p className="line-clamp-6">
+                              <div className="line-clamp-6">
                                  {review.justify.map((paragraph) => (
-                                    <p className="indent-4">{paragraph}</p>
+                                    <p className="indent-4" key={paragraph}>{paragraph} </p>
                                  ))}
-                              </p>
+                              </div>
                            </div>
                         </div>
                      )}
@@ -246,7 +246,7 @@ export function Profile() {
                      {favorites && (
                         <div className="grid grid-cols-1 gap-3 lg:grid-cols-3 md:grid-cols-2">
                            {favorites.map((favorite) => (
-                              <Link to={`/game/${favorite.idGame}`}>
+                              <Link to={`/game/${favorite.idGame}`} key={favorite.idGame}>
                                  <div className="relative flex flex-col justify-center items-center gap-1">
                                     <img
                                        className=""

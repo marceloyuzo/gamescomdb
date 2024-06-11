@@ -1,7 +1,7 @@
 import { AuthContext } from "../../contexts/AuthContext"
 import { useContext, useEffect, useState } from "react"
 import { FaUser } from "react-icons/fa";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "../../services/firebaseConnection";
 import { signOut } from "firebase/auth";
@@ -16,6 +16,7 @@ export function SideMenu({ idUser }: { idUser: string }) {
   const { user } = useContext(AuthContext)
   const navigate = useNavigate()
   const userAuth = useParams()
+  const location = useLocation()
   const [userInfo, setUserInfo] = useState<InfoSideProps>()
 
   useEffect(() => {
@@ -28,6 +29,7 @@ export function SideMenu({ idUser }: { idUser: string }) {
     await getDoc(userRef)
       .then((snapshot) => {
         let tempInfo: InfoSideProps | null = null
+
         tempInfo = ({
           idUser: snapshot.data()?.idUser,
           username: snapshot.data()?.username,

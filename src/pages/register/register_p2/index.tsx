@@ -45,7 +45,6 @@ export function CompleteRegister() {
   }
 
   async function handleInfoRegister(data: RegisterData) {
-    console.log(data)
     try {
       await updateDoc(doc(db, "users", `${user?.idUser}`), {
         fullname: data.fullname,
@@ -100,7 +99,7 @@ export function CompleteRegister() {
 
   return (
     <Container>
-      <div className="h-body mt-header w-full flex flex-col justify-center items-center">
+      <div className="min-h-body mt-header w-full flex flex-col justify-center items-center">
         <div className="relative border-1 p-14 rounded-lg pt-24 flex flex-col items-center">
           {!photo && (
             <FaUser size={160} className="absolute rounded-full border-1 p-4 text-slate-300 bg-bg_color -top-24 z-10" />

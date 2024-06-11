@@ -59,7 +59,7 @@ export function Users() {
 
   return (
     <Container>
-      <main className="w-full mt-header py-16">
+      <main className="w-full min-h-body mt-header py-16">
         <div className="relative w-full border-1 flex items-center py-8 rounded-lg mb-6 px-4">
           <div className="absolute top-1/2 right-1/2 transform translate-x-1/2 -translate-y-1/2">
             <h2 className="text-xl text-main_color">LISTA DE USUÁRIOS</h2>

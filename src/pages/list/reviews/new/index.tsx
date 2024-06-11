@@ -9,11 +9,12 @@ import "./style.css"
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../../../services/firebaseConnection";
 import { useNavigate } from "react-router-dom";
 import { apiSteam } from "../../../../services/api";
 import { IoIosArrowRoundBack } from "react-icons/io";
+import ModalFeedback from "../../../../components/ModalFeedback";
 
 const schema = z.object({
   review: z.string().min(1, "Escreva algo a respeito do jogo")
@@ -33,6 +34,10 @@ interface GamesReviewProps {
 export function NewReview() {
   const navigate = useNavigate()
   const [selectGame, setSelectGame] = useState<GamePlayedProps>()
+  const [enableFeedback, setEnableFeedback] = useState<boolean>(false)
+  const [sucess, setSucess] = useState<boolean>(false)
+  const [textFeedback, setTextFeedback] = useState<string>("")
+  const [linkRef, setLinkRef] = useState<string>("")
   const { myGamesPlayed, loadListGamesPlayed } = useContext(GamesPlayedContext)
   const { user } = useContext(AuthContext)
   const { handleSubmit, register } = useForm<ReviewData>({
@@ -55,7 +60,14 @@ export function NewReview() {
     const loadedGame = await getGame(selectGame.idGame);
 
     if (!loadedGame) {
-      console.log("NA OCARREGOU")
+      return
+    }
+
+    if (await searchReview(loadedGame.idGame)) {
+      setSucess(false)
+      setEnableFeedback(true)
+      setTextFeedback("Você já possui uma review sobre esse jogo.")
+      setLinkRef(`/profile/newreview`)
       return
     }
 
@@ -76,11 +88,19 @@ export function NewReview() {
         developers: loadedGame?.developers
       })
 
-      console.log("REVIEW CADASTRADO COM SUCESSO.")
-      navigate(`/profile/${user?.idUser}/reviews`)
+      setEnableFeedback(true)
+      setSucess(true)
+      setTextFeedback("Review cadastrado com sucesso!")
+      setLinkRef(`/profile/${user?.idUser}/reviews`)
+      return
     }
     catch (error) {
       console.log(error)
+      setEnableFeedback(true)
+      setSucess(false)
+      setTextFeedback("Ocorreu um erro ao realizar o cadastro.")
+      setLinkRef(`/profile/newreview`)
+      return
     }
   }
 
@@ -104,6 +124,19 @@ export function NewReview() {
     }
   }
 
+  async function searchReview(idGame: string) {
+    const reviewsRef = collection(db, "users", `${user?.idUser}`, "reviews")
+    const queryRef = query(reviewsRef, where("idGame", "==", idGame))
+
+    const snapshot = await getDocs(queryRef)
+
+    if (snapshot.empty) {
+      return false
+    }
+
+    return true
+  }
+
   function formatDate() {
     const date = new Date()
 
@@ -117,7 +150,7 @@ export function NewReview() {
   return (
     <>
       <Container>
-        <main className="mt-header w-full py-16">
+        <main className="min-h-body mt-header w-full py-16">
           <div className="relative w-full border-1 flex justify-end items-center py-4 rounded-lg mb-6 px-4">
             <div className="absolute top-1/2 right-1/2 transform translate-x-1/2 -translate-y-1/2">
               <h2 className="text-xl text-main_color">ADICIONAR REVIEW</h2>
@@ -182,7 +215,7 @@ export function NewReview() {
               </div>
             </form>
           )}
-
+          <ModalFeedback enableFeedback={enableFeedback} onClose={() => setEnableFeedback(false)} sucess={sucess} text={textFeedback} linkref={linkRef} />
         </main>
       </Container>
     </>

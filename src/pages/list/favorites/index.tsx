@@ -51,7 +51,7 @@ export function Favorites() {
   return (
     <>
       <Container>
-        <div className="mt-header w-full py-10">
+        <div className="min-h-body mt-header w-full py-10">
           <ProfileTitle title="JOGOS FAVORITOS" />
 
           {favoriteGames.length > 0 && (
@@ -80,7 +80,7 @@ export function Favorites() {
           )}
           {favoriteGames.length == 0 && (
             <div className="mt-header w-full">
-              <h1 className="fixed right-1/2 top-1/2 transform translate-x-1/2 -translate-y-1/2 text-4xl text-main_color ">NÃO POSSUI JOGOS FAVORITOS</h1>
+              <h1 className="absolute right-1/2 top-1/2 transform translate-x-1/2 translate-y-1/2 text-4xl text-main_color ">NÃO POSSUI JOGOS FAVORITOS</h1>
             </div>
           )}
         </div>

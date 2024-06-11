@@ -8,6 +8,7 @@ import { FaLinkedin } from "react-icons/fa";
 import { FaInstagram } from "react-icons/fa";
 import { Card } from "../../components/Card";
 import { useEffect } from "react"
+import "./style.css"
 
 export function Landing() {
    const navigate = useNavigate()
@@ -51,15 +52,21 @@ export function Landing() {
             </div>
          </div>
          <div className="h-body flex flex-col justify-center items-center gap-5 w-full">
-            <h1 className="text-main_color text-4xl">FEATURES</h1>
-            <div className="w-full max-w-96 h-0.5 bg-main_color mb-16"></div>
-            <div className="flex justify-center items-center gap-20 transition-all">
-               <Card img={userPage} title={"PERFIL CUSTOM"} />
-               <Card img={gameDetailPage} title={"INFORMAÇÕES DOS JOGOS"} />
-               <Card img={listGamesPage} title={"LISTA DE JOGOS PRÓPRIA"} />
+            <h1 className="text-main_color text-4xl title">FEATURES</h1>
+            <div className="w-full max-w-96 h-0.5 bg-main_color mb-16 title"></div>
+            <div className="flex justify-center items-center gap-20">
+               <div className="card card_1">
+                  <Card img={userPage} title={"PERFIL CUSTOM"} />
+               </div>
+               <div className="card card_2">
+                  <Card img={gameDetailPage} title={"INFORMAÇÕES DOS JOGOS"} />
+               </div>
+               <div className="card card_3">
+                  <Card img={listGamesPage} title={"LISTA DE JOGOS PRÓPRIA"} />
+               </div>
             </div>
          </div>
-         <div className="h-dvh pt-header flex justify-center items-center w-full gap-20" id="about">
+         <div className="h-dvh pt-header flex justify-center items-center w-full gap-20 about" id="about">
             <div className="text-2xl flex flex-col justify-center items-center text-main_color gap-3 text-justify w-2/3">
                <h1 className="text-main_color text-4xl">SOBRE O PROJETO</h1>
                <div className="w-full max-w-96 h-0.5 bg-main_color mb-16"></div>
@@ -70,9 +77,15 @@ export function Landing() {
             </div>
             <div className="w-1/3 flex flex-col justfiy-center items-center">
                <div className="flex gap-4 text-main_color opacity-40">
-                  <FaGithub size={90} />
-                  <FaLinkedin size={90} />
-                  <FaInstagram size={90} />
+                  <a href="https://github.com/marceloyuzo" target="_blank">
+                     <FaGithub size={90} />
+                  </a>
+                  <a href="https://www.linkedin.com/in/marcelo-yuzo-itami-0a79a2263/" target="_blank">
+                     <FaLinkedin size={90} />
+                  </a>
+                  <a href="https://www.instagram.com/marceloyuzo/" target="_blank">
+                     <FaInstagram size={90} />
+                  </a>
                </div>
                <h2 className="text-2xl text-main_color mt-2">MEIOS DE CONTATO</h2>
             </div>

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { Container } from "../../../components/Container";
 import { SideMenu } from "../../../components/SideMenu";
 import { AuthContext } from "../../../contexts/AuthContext";
@@ -6,8 +6,12 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "../../../services/firebaseConnection";
+import { db, storage } from "../../../services/firebaseConnection";
 import { useNavigate, useParams } from "react-router-dom";
+import ModalFeedback from "../../../components/ModalFeedback";
+import { MdFileUpload } from "react-icons/md";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { v4 as uuidV4 } from 'uuid'
 
 const schemaPersonal = z.object({
   fullname: z.string().optional(),
@@ -33,12 +37,24 @@ interface UserInfoProps {
   privacy: PrivacyData["privacy"]
 }
 
+interface ImageProps {
+  name: string,
+  uid: string,
+  previewUrl: string,
+  url: string
+}
+
 export function EditProfile() {
   const navigate = useNavigate()
   const { user } = useContext(AuthContext)
   const userAuth = useParams()
+  const [photo, setPhoto] = useState<ImageProps>()
   const [readOnly, setReadOnly] = useState<boolean>(true)
   const [userInfo, setUserInfo] = useState<UserInfoProps | null>()
+  const [enableFeedback, setEnableFeedback] = useState<boolean>(false)
+  const [sucess, setSucess] = useState<boolean>(false)
+  const [textFeedback, setTextFeedback] = useState<string>("")
+  const [linkRef, setLinkRef] = useState<string>("")
   const { register: registerPersonal, setValue: setValuePersonal, handleSubmit: handlePersonal, formState: { errors: errorsPersonal } } = useForm<PersonalData>({
     resolver: zodResolver(schemaPersonal),
     mode: "onChange"
@@ -59,6 +75,12 @@ export function EditProfile() {
       fetchData();
     }
   }, [user?.idUser, setValuePersonal]);
+
+  useEffect(() => {
+    if (photo) {
+      updatePhotoProfile()
+    }
+  }, [photo])
 
   async function fetchData() {
     const info: UserInfoProps | null = await loadUserInfo();
@@ -111,8 +133,17 @@ export function EditProfile() {
       birthday: data.birthday
     })
       .then(() => {
-        console.log("INFORMAÇÃO ATUALIZADO COM SUCESSO.")
+        setSucess(true)
+        setTextFeedback("Suas informações pessoais foram atualizadas com sucesso.")
+        setLinkRef(`/profile/${user?.idUser}/edit`)
+        setEnableFeedback(true)
         setReadOnly(true)
+      })
+      .catch(() => {
+        setSucess(false)
+        setTextFeedback("Ocorreu um erro ao atualizar suas informações pessoais.")
+        setLinkRef(`/profile/${user?.idUser}/edit`)
+        setEnableFeedback(true)
       })
 
   }
@@ -124,8 +155,70 @@ export function EditProfile() {
       privacy: data.privacy
     })
       .then(() => {
-        console.log("INFORMAÇÃO ATUALIZADO COM SUCESSO.")
+        setSucess(true)
+        setTextFeedback("Sua privacidade foi atualizada com sucesso.")
+        setLinkRef(`/profile/${user?.idUser}/edit`)
+        setEnableFeedback(true)
       })
+      .catch(() => {
+        setSucess(false)
+        setTextFeedback("Ocorreu um problema ao atualizar sua privacidade.")
+        setLinkRef(`/profile/${user?.idUser}/edit`)
+        setEnableFeedback(true)
+      })
+  }
+
+  async function handleFile(e: ChangeEvent<HTMLInputElement>) {
+    if (e.target.files && e.target.files[0]) {
+      const image = e.target.files[0]
+
+      if (image.type === 'image/jpeg' || image.type === 'image/png') {
+        await handleUpload(image)
+      } else {
+        alert("Envie a foto no formato JPEG ou PNG.")
+        return
+      }
+    }
+  }
+
+  async function handleUpload(image: File) {
+    if (!user?.idUser) {
+      return
+    }
+
+    const currentUid = user.idUser
+    const uidImage = uuidV4()
+
+    const uploadRef = ref(storage, `images/${currentUid}/${uidImage}`)
+
+    uploadBytes(uploadRef, image)
+      .then((snapshot) => {
+        getDownloadURL(snapshot.ref).then((downloadUrl) => {
+          const imageItem = {
+            name: uidImage,
+            uid: currentUid,
+            previewUrl: URL.createObjectURL(image),
+            url: downloadUrl
+          }
+
+          setPhoto(imageItem)
+        })
+      })
+  }
+
+  async function updatePhotoProfile() {
+    try {
+      await updateDoc(doc(db, "users", `${user?.idUser}`), {
+        photo: photo
+      })
+      setSucess(true)
+      setTextFeedback("Sua foto de perfil foi atualizada.")
+      setLinkRef(`/profile/${user?.idUser}/edit`)
+      setEnableFeedback(true)
+    }
+    catch (error) {
+      console.log(error)
+    }
   }
 
   if (!user?.idUser) {
@@ -226,7 +319,22 @@ export function EditProfile() {
               </select>
             </div>
           </form>
+
+          <div className="mt-8">
+            <h2 className="text-xl text-main_color mb-2">FOTO DE PERFIL</h2>
+
+            <div className="relative w-full max-w-40 bg-main_color rounded-lg h-8 cursor-pointer">
+              <input
+                type="file"
+                accept="image/"
+                onChange={handleFile}
+                className="opacity-0 w-full cursor-pointer h-full rounded-lg"
+              />
+              <MdFileUpload size={30} className="absolute top-1/2 right-1/2 transform translate-x-1/2 -translate-y-1/2 cursor-pointer text-bg_color" />
+            </div>
+          </div>
         </div>
+        <ModalFeedback enableFeedback={enableFeedback} onClose={() => setEnableFeedback(false)} sucess={sucess} text={textFeedback} linkref={linkRef} />
       </main >
     </Container >
   )

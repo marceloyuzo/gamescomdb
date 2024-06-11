@@ -11,6 +11,7 @@ import { addDoc, collection, deleteDoc, doc, getDocs } from "firebase/firestore"
 import { db } from "../../../../services/firebaseConnection";
 import { useNavigate } from "react-router-dom";
 import { IoIosArrowRoundBack } from "react-icons/io";
+import ModalFeedback from "../../../../components/ModalFeedback";
 
 export interface GamesFavoritesProps {
   idGame: number,
@@ -25,6 +26,10 @@ export function NewFavorite() {
   const navigate = useNavigate()
   const [favoriteGames, setFavoriteGames] = useState<GamesFavoritesProps[]>([])
   const [loadedFavorites, setLoadedFavorites] = useState<GamesFavoritesProps[]>([])
+  const [enableFeedback, setEnableFeedback] = useState<boolean>(false)
+  const [sucess, setSucess] = useState<boolean>(false)
+  const [textFeedback, setTextFeedback] = useState<string>("")
+  const [linkRef, setLinkRef] = useState<string>("")
   const { myGamesPlayed, loadListGamesPlayed } = useContext(GamesPlayedContext)
   const { user } = useContext(AuthContext)
 
@@ -67,7 +72,6 @@ export function NewFavorite() {
       let listFavoritesGames = favoriteGames.filter((game) => (game.idGame !== newGame.idGame))
 
       setFavoriteGames(listFavoritesGames)
-      console.log("TEM AQUI")
       return
     }
 
@@ -106,9 +110,6 @@ export function NewFavorite() {
           status: game.status,
           datePlayed: game.datePlayed
         })
-          .then(() => {
-            console.log("DEU BOM")
-          })
       })
     }
 
@@ -117,19 +118,19 @@ export function NewFavorite() {
         let deleteRef = doc(db, "users", `${user?.idUser}`, "favorites", game.idRegister)
 
         deleteDoc(deleteRef)
-          .then(() => {
-            console.log("DEU BOM")
-          })
       })
     }
 
-    navigate(`/profile/${user?.idUser}`)
+    setEnableFeedback(true)
+    setSucess(true)
+    setTextFeedback("Seus jogos favoritos foram atualizados com sucesso.")
+    setLinkRef("/profile/newfavorite")
   }
 
   return (
     <>
       <Container>
-        <main className="mt-header w-full py-16">
+        <main className="min-h-body mt-header w-full py-16">
           <div className="relative w-full border-1 flex justify-end items-center py-4 rounded-lg mb-6 px-4">
             <div className="absolute top-1/2 right-1/2 transform translate-x-1/2 -translate-y-1/2">
               <h2 className="text-xl text-main_color">ADICIONAR AOS FAVORITOS</h2>
@@ -209,7 +210,7 @@ export function NewFavorite() {
             </div>
           </div>
 
-
+          <ModalFeedback enableFeedback={enableFeedback} onClose={() => setEnableFeedback(false)} sucess={sucess} text={textFeedback} linkref={linkRef} />
         </main>
       </Container>
     </>

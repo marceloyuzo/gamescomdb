@@ -7,6 +7,7 @@ import { z } from "zod"
 import { useContext } from "react"
 import { GamesPlayedContext } from "../../contexts/GamesPlayedContext";
 import { GamePlayedProps } from "../../contexts/GamesPlayedContext";
+import ModalFeedback from "../ModalFeedback";
 
 interface GamesProps {
   idGame: number,
@@ -27,6 +28,10 @@ type FormActivity = z.infer<typeof schema>
 
 const Modal = ({ enableModal, onClose }: { enableModal: boolean, onClose: () => void }) => {
   const { addNewGamePlayed } = useContext(GamesPlayedContext)
+  const [enableFeedback, setEnableFeedback] = useState<boolean>(false)
+  const [sucess, setSucess] = useState<boolean>(false)
+  const [textFeedback, setTextFeedback] = useState<string>("")
+  const [linkRef, setLinkRef] = useState<string>("")
   const [games, setGames] = useState<GamesProps[]>([])
   const [filteredGames, setFilteredGames] = useState<GamesProps[]>([])
   const [inputSearch, setInputSearch] = useState("")
@@ -105,7 +110,7 @@ const Modal = ({ enableModal, onClose }: { enableModal: boolean, onClose: () => 
     getGame(idGame)
   }
 
-  function handlePost(data: FormActivity) {
+  async function handlePost(data: FormActivity) {
     if (!activeGame) {
       console.log("SELECIONE UM JOGO")
       return
@@ -119,7 +124,12 @@ const Modal = ({ enableModal, onClose }: { enableModal: boolean, onClose: () => 
       datePlayed: new Date()
     }
 
-    addNewGamePlayed(temp)
+    const feedbackResultTemp = await addNewGamePlayed(temp)
+
+    setEnableFeedback(true)
+    setSucess(feedbackResultTemp.sucess)
+    setTextFeedback(feedbackResultTemp.textFeedback)
+    setLinkRef(feedbackResultTemp.linkRef)
   }
 
   if (!enableModal) return null
@@ -147,7 +157,7 @@ const Modal = ({ enableModal, onClose }: { enableModal: boolean, onClose: () => 
             {filteredGames && (
               <ul className="h-72 w-1/2 border-1 rounded-lg overflow-auto">
                 {filteredGames.map((game) => (
-                  <li className="w-full p-2 border-y-1 overflow-hidden text-nowrap first-of-type:border-y-transparent first-of-type:rounded-tl-lg last-of-type:border-y-transparent last-of-type:rounded-bl-lg hover:bg-main_color hover:text-bg_color" onClick={() => handleActiveGame(game.idGame)}>{game.name}</li>
+                  <li key={game.idGame} className="w-full p-2 border-y-1 overflow-hidden text-nowrap first-of-type:border-y-transparent first-of-type:rounded-tl-lg last-of-type:border-y-transparent last-of-type:rounded-bl-lg hover:bg-main_color hover:text-bg_color" onClick={() => handleActiveGame(game.idGame)}>{game.name}</li>
                 ))}
               </ul>
             )}
@@ -186,6 +196,7 @@ const Modal = ({ enableModal, onClose }: { enableModal: boolean, onClose: () => 
             >PUBLICAR</button>
           </form>
 
+          <ModalFeedback enableFeedback={enableFeedback} onClose={() => setEnableFeedback(false)} sucess={sucess} text={textFeedback} linkref={linkRef} />
         </div>
       </div >
     </>

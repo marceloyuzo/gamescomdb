@@ -123,14 +123,14 @@ export function Profile() {
                            {(user?.idUser === userAuth.id) && (
                               <div className="flex justify-end">
                                  <button
-                                    className="text-lg bg-secundary_color text-main_color font-light px-4 py-0.5 rounded-lg"
+                                    className="text-base bg-secundary_color text-main_color font-light px-4 py-0.5 rounded-lg hover:bg-red-950 transition-colors duration-300"
                                     onClick={() => setEnableModal(true)}
                                  >ADICIONAR JOGO</button>
                                  <Modal enableModal={enableModal} onClose={() => setEnableModal(false)} />
                               </div>
                            )}
                            <button
-                              className="text-lg bg-main_color px-4 py-0.5 rounded-lg font-medium"
+                              className="text-base bg-main_color px-4 py-0.5 rounded-lg font-medium hover:bg-zinc-600 transition-colors duration-300"
                               onClick={() => navigate(`/profile/${userAuth.id}/gamesplayed`)}
                            >VER MAIS</button>
 
@@ -168,13 +168,13 @@ export function Profile() {
                            {(user?.idUser === userAuth.id) && (
                               <div className="flex justify-end">
                                  <button
-                                    className="text-lg bg-secundary_color text-main_color font-light px-4 py-0.5 rounded-lg "
+                                    className="text-base bg-secundary_color text-main_color font-light px-4 py-0.5 rounded-lg hover:bg-red-950 transition-colors duration-300"
                                     onClick={() => navigate("/profile/newreview")}
                                  >ADICIONAR REVIEW</button>
                               </div>
                            )}
                            <button
-                              className="text-lg bg-main_color px-4 py-0.5 rounded-lg font-medium"
+                              className="text-base bg-main_color px-4 py-0.5 rounded-lg font-medium hover:bg-zinc-600 transition-colors duration-300"
                               onClick={() => navigate(`/profile/${userAuth.id}/reviews`)}
                            >VER MAIS</button>
 
@@ -232,12 +232,12 @@ export function Profile() {
                            {(user?.idUser === userAuth.id) && (
                               <div className="flex justify-end">
                                  <button
-                                    className="text-lg bg-secundary_color text-main_color font-light px-4 py-0.5 rounded-lg"
+                                    className="text-base bg-secundary_color text-main_color font-light px-4 py-0.5 rounded-lg hover:bg-red-950 transition-colors duration-300"
                                     onClick={() => navigate("/profile/newfavorite")}
                                  >ADICIONAR FAVORITO</button>
                               </div>
                            )}
-                           <button className="text-lg bg-main_color px-4 py-0.5 rounded-lg font-medium"
+                           <button className="text-base bg-main_color px-4 py-0.5 rounded-lg font-medium hover:bg-zinc-600 transition-colors duration-300"
                               onClick={() => navigate(`/profile/${userAuth.id}/favorites`)}
                            >VER MAIS</button>
 

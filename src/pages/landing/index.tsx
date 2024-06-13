@@ -40,12 +40,12 @@ export function Landing() {
 
             <div className="w-full flex justify-center gap-4 text-base mt-6 md:text-xl">
                <button
-                  className="w-60 max-w-80 bg-main_color rounded-lg py-1 text-center shadow-md md:w-full"
+                  className="w-60 max-w-80 bg-main_color rounded-lg py-1 text-center shadow-md md:w-full hover:bg-zinc-600 transition-colors duration-300"
                   onClick={() => navigate("/#about")}
                >
                   SOBRE O PROJETO
                </button>
-               <Link to="/register" className="w-60 max-w-80 bg-secundary_color text-main_color font-medium rounded-lg py-1 text-center shadow-md md:w-full">
+               <Link to="/register" className="w-60 max-w-80 bg-secundary_color text-main_color font-medium rounded-lg py-1 text-center shadow-md md:w-full hover:bg-red-950 transition-colors duration-300">
                   COMECE A USAR
 
                </Link>

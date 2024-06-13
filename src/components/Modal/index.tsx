@@ -192,7 +192,7 @@ const Modal = ({ enableModal, onClose }: { enableModal: boolean, onClose: () => 
               <option value="ON GOING">ON GOING</option>
             </select>
             <button
-              className="w-full max-w-40 bg-secundary_color rounded-lg py-1 text-bg_color font-semibold"
+              className="w-full max-w-40 bg-secundary_color rounded-lg py-1 text-main_color font-medium "
             >PUBLICAR</button>
           </form>
 

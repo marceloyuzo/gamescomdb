@@ -16,7 +16,6 @@ export function SideMenu({ idUser }: { idUser: string }) {
   const { user } = useContext(AuthContext)
   const navigate = useNavigate()
   const userAuth = useParams()
-  const location = useLocation()
   const [userInfo, setUserInfo] = useState<InfoSideProps>()
 
   useEffect(() => {
@@ -69,7 +68,7 @@ export function SideMenu({ idUser }: { idUser: string }) {
 
       {(user?.idUser === idUser) && (
         <button
-          className="w-full bg-main_color text-bg_color font-bold rounded-lg h-10 mt-4"
+          className="w-full bg-main_color text-bg_color font-bold rounded-lg h-10 mt-4 hover:bg-zinc-600 transition-colors duration-300"
           onClick={() => navigate(`/profile/${user.idUser}/edit`)}
         >EDITAR PERFIL</button>
       )}
@@ -97,7 +96,7 @@ export function SideMenu({ idUser }: { idUser: string }) {
 
       {(user?.idUser === idUser) && (
         <button
-          className="w-full bg-secundary_color text-main_color font-medium rounded-lg h-10 mt-4"
+          className="w-full bg-secundary_color text-main_color font-medium rounded-lg h-10 mt-4 hover:bg-red-950 transition-colors duration-300"
           onClick={() => handleLogout()}
         >FINALIZAR SESSÃO</button>
       )}

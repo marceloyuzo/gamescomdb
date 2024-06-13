@@ -67,7 +67,7 @@ export function ProfileTitle({ title }: { title: string }) {
           <div className="flex items-center">
             <IoIosArrowRoundBack
               size={36}
-              className="rounded-full text-main_color p-1 hover:bg-main_color hover:text-bg_color"
+              className="rounded-full text-main_color p-1 hover:bg-main_color hover:text-bg_color transition-colors duration-300"
               onClick={() => navigate(`/profile/${userAuth.id}`)}
             />
           </div>

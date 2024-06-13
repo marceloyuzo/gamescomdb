@@ -1,7 +1,7 @@
 import { AuthContext } from "../../contexts/AuthContext"
 import { useContext, useEffect, useState } from "react"
 import { FaUser } from "react-icons/fa";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "../../services/firebaseConnection";
 import { signOut } from "firebase/auth";
